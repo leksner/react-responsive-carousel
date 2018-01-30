@@ -43,6 +43,10 @@ class Thumbs extends Component {
     }
 
     componentWillReceiveProps (props, state) {
+        if (props.children != this.props.children) {
+            this.setupThumbs(props.children);
+        }
+
         if (props.selectedItem !== this.state.selectedItem) {
             this.setState({
                 selectedItem: props.selectedItem,
@@ -61,14 +65,14 @@ class Thumbs extends Component {
         this.destroyThumbs();
     }
 
-    setupThumbs () {
+    setupThumbs (children = this.props.children) {
         // as the widths are calculated, we need to resize
         // the carousel when the window is resized
         window.addEventListener("resize", this.updateSizes);
         // issue #2 - image loading smaller
         window.addEventListener("DOMContentLoaded", this.updateSizes);
 
-        const images = this.getImages();
+        const images = this.getImages(children);
 
         if (!images) {
             return;
@@ -103,8 +107,8 @@ class Thumbs extends Component {
         this.showArrows = this.visibleItems < total;
     }
 
-    getImages() {
-        const images = React.Children.map(this.props.children, (item, index) => {
+    getImages(children) {
+        const images = React.Children.map(children, (item, index) => {
             let img = item;
 
             // if the item is not an image, try to find the first image in the item's children.
